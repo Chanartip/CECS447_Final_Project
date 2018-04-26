@@ -39,7 +39,10 @@ void UART0_Init(void){
   GPIO_PORTA_PCTL_R = (GPIO_PORTA_PCTL_R&0xFFFFFF00)+0x00000011;
   GPIO_PORTA_AMSEL_R &= ~0x03;          // disable analog functionality on PA
 }
-// Uart 1, 9600 Baud, 8 Bit, No Parity.
+// Uart 1, 38400 Baud, 8 Bit, No Parity. 
+// IBRD = 50,000,000/ (16*38400) = 81.3802
+// FBRD = .3802 * 64 + 0.5 = 24.8328
+// if 9600, IBRD=325, FBRD=33
 void UART1_Init(void) {
     SYSCTL_RCGC1_R     |=  0x02;       // activate UART1
     SYSCTL_RCGCGPIO_R  |=  0x02;       // activate port B
