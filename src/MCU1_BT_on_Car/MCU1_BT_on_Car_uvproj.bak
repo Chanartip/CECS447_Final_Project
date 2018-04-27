@@ -411,19 +411,19 @@
               <FilePath>.\startup.s</FilePath>
             </File>
             <File>
-              <FileName>Proj2_MCU2.c</FileName>
+              <FileName>MCU1_BT_on_Car.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Proj2_MCU2.c</FilePath>
-            </File>
-            <File>
-              <FileName>UART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\UART.c</FilePath>
+              <FilePath>.\MCU1_BT_on_Car.c</FilePath>
             </File>
             <File>
               <FileName>PLL.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\PLL.c</FilePath>
+              <FilePath>..\lib\PLL.c</FilePath>
+            </File>
+            <File>
+              <FileName>UART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\UART.c</FilePath>
             </File>
           </Files>
         </Group>

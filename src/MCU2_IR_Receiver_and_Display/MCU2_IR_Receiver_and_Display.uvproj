@@ -411,24 +411,19 @@
               <FilePath>.\startup.s</FilePath>
             </File>
             <File>
+              <FileName>MCU2_IR_Receiver_and_Display.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\MCU2_IR_Receiver_and_Display.c</FilePath>
+            </File>
+            <File>
               <FileName>PLL.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\PLL.c</FilePath>
+              <FilePath>..\lib\PLL.c</FilePath>
             </File>
             <File>
-              <FileName>PWM.c</FileName>
+              <FileName>UART.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\PWM.c</FilePath>
-            </File>
-            <File>
-              <FileName>PWMtest.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\PWMtest.c</FilePath>
-            </File>
-            <File>
-              <FileName>SysTick.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\SysTick.c</FilePath>
+              <FilePath>..\lib\UART.c</FilePath>
             </File>
           </Files>
         </Group>
