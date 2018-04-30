@@ -42,14 +42,45 @@ void UART0_Init(void){
 // Uart 1, 38400 Baud, 8 Bit, No Parity. 
 // IBRD = 50,000,000/ (16*38400) = 81.3802
 // FBRD = .3802 * 64 + 0.5 = 24.8328
+//void UART1_Init(void) {
+//    SYSCTL_RCGC1_R     |=  0x02;       // activate UART1
+//    SYSCTL_RCGCGPIO_R  |=  0x02;       // activate port B
+//    while((SYSCTL_PRGPIO_R&0x02) == 0){};    
+//    UART1_CTL_R        &= ~0x01;       // disable UART
+//    UART1_IBRD_R        =  81;        // IBRD, 50Mhz clk, 9600 baud
+//    UART1_FBRD_R        =  24;         // FBRD
+//    UART1_LCRH_R        =  0x70;       // 8 bit(no parity, one stop, FIFOs)
+//    UART1_CTL_R        |=  0x01;       // enable UART
+//    GPIO_PORTB_AFSEL_R |=  0x03;       // enable alt funct on PB0, PB1
+//    GPIO_PORTB_PCTL_R  &= ~0x000000FF; // configure PB0 as U1Rx and PB1 as U1Tx
+//    GPIO_PORTB_PCTL_R  |=  0x00000011;
+//    GPIO_PORTB_AMSEL_R &= ~0x03;       // disable analog funct on PB0, PB1
+//    GPIO_PORTB_DEN_R   |=  0x03;       // enable digital I/O on PB0, PB1
+//}
 // if 9600, IBRD=325, FBRD=33
+//void UART1_Init(void) {
+//    SYSCTL_RCGC1_R     |=  0x02;       // activate UART1
+//    SYSCTL_RCGCGPIO_R  |=  0x02;       // activate port B
+//    while((SYSCTL_PRGPIO_R&0x02) == 0){};    
+//    UART1_CTL_R        &= ~0x01;       // disable UART
+//    UART1_IBRD_R        =  325;        // IBRD, 50Mhz clk, 9600 baud
+//    UART1_FBRD_R        =  33;         // FBRD
+//    UART1_LCRH_R        =  0x70;       // 8 bit(no parity, one stop, FIFOs)
+//    UART1_CTL_R        |=  0x01;       // enable UART
+//    GPIO_PORTB_AFSEL_R |=  0x03;       // enable alt funct on PB0, PB1
+//    GPIO_PORTB_PCTL_R  &= ~0x000000FF; // configure PB0 as U1Rx and PB1 as U1Tx
+//    GPIO_PORTB_PCTL_R  |=  0x00000011;
+//    GPIO_PORTB_AMSEL_R &= ~0x03;       // disable analog funct on PB0, PB1
+//    GPIO_PORTB_DEN_R   |=  0x03;       // enable digital I/O on PB0, PB1
+//}
+// if 57600, IBRD=54, FBRD=16
 void UART1_Init(void) {
     SYSCTL_RCGC1_R     |=  0x02;       // activate UART1
     SYSCTL_RCGCGPIO_R  |=  0x02;       // activate port B
     while((SYSCTL_PRGPIO_R&0x02) == 0){};    
     UART1_CTL_R        &= ~0x01;       // disable UART
-    UART1_IBRD_R        =  325;        // IBRD, 80Mhz clk, 9600 baud
-    UART1_FBRD_R        =  33;         // FBRD
+    UART1_IBRD_R        =  54;         // IBRD, 50Mhz clk, 57600 baud
+    UART1_FBRD_R        =  16;         // FBRD
     UART1_LCRH_R        =  0x70;       // 8 bit(no parity, one stop, FIFOs)
     UART1_CTL_R        |=  0x01;       // enable UART
     GPIO_PORTB_AFSEL_R |=  0x03;       // enable alt funct on PB0, PB1

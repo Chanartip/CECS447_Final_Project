@@ -24,6 +24,8 @@ Includes, defines, prototypes, global variables.
 #include "../lib/PLL.h"
 #include "../lib/UART.h"
 
+#define LED (*((volatile unsigned long *)0x40025038))		// PF3-1
+
 #define _r    0x72
 #define _$    0x24
 #define _sh   0x23
@@ -45,7 +47,7 @@ typedef const struct State Styp;
 #define CMD_3  3
 #define CMD_2  4
 #define CMD_1  5 
-#define CMD_0 6
+#define CMD_0  6
 
 #define PWM_50P_DUTY 325 // 50% Duty cycle
 #define PWM_0P_DUTY 1
@@ -73,37 +75,54 @@ unsigned char Got_IR=0;
 /***************************************************************************
 Inits
 ***************************************************************************/
+
 /*
-    PWM (Module1, PWM6) for Generating IR_signal
+ * Port F Initialization for LED inidicating PWM power percentage
+ *      RED LED - for 50%
+ *      GREEN LED - for 75%
+ *      BLUE LED - for 100%
+ */
+void PortF_LED_Init(void){ volatile unsigned long delay;
+    SYSCTL_RCGCGPIO_R |= 0x20;            // 2) activate port F
+    GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+    delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
+    GPIO_PORTF_AFSEL_R &= ~0x0E;           // enable alt funct on PF3-1
+    GPIO_PORTF_PCTL_R  &= ~0x0000FFF0;     // configure PF3-1 as GPIO
+    GPIO_PORTF_AMSEL_R &= ~0x0E;          // disable analog functionality on PF3-1
+    GPIO_PORTF_DIR_R |= 0x0E;
+    GPIO_PORTF_DEN_R |= 0x0E;             // enable digital I/O on PF3-1
+}
+
+/*
+    PWM (Module1, PWM0) for Generating IR_signal
 */
-void M1_PWM6_PF2_Init(unsigned int period, unsigned int duty){
+void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty){
     
   volatile unsigned long delay;
   SYSCTL_RCGCPWM_R |= 0x02;             // 1) activate PWM1
-  SYSCTL_RCGCGPIO_R |= 0x20;            // 2) activate port F
-  GPIO_PORTF_LOCK_R = GPIO_LOCK_KEY;
+  SYSCTL_RCGCGPIO_R |= 0x08;            // 2) activate port D
   delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
-  GPIO_PORTF_AFSEL_R |= 0x04;           // enable alt funct on PF2
-  GPIO_PORTF_PCTL_R &= ~0x00000F00;     // configure PF2 as M1PWM6
-  GPIO_PORTF_PCTL_R |= 0x00000500;
-  GPIO_PORTF_AMSEL_R &= ~0x04;          // disable analog functionality on PF2
-  GPIO_PORTF_DEN_R |= 0x04;             // enable digital I/O on PF2
+  GPIO_PORTD_AFSEL_R |= 0x01;           // enable alt funct on PD0
+  GPIO_PORTD_PCTL_R &= ~0x0000000F;     // configure PD0 as M1PWM0
+  GPIO_PORTD_PCTL_R |=  0x00000005;
+  GPIO_PORTD_AMSEL_R &= ~0x01;          // disable analog functionality on PD0
+  GPIO_PORTD_DEN_R |= 0x01;             // enable digital I/O on PD0
   SYSCTL_RCC_R |= SYSCTL_RCC_USEPWMDIV; // 3) use PWM divider
   SYSCTL_RCC_R &= ~SYSCTL_RCC_PWMDIV_M; //    clear PWM divider field
   SYSCTL_RCC_R += SYSCTL_RCC_PWMDIV_2;  //    configure for /2 divider
-  PWM1_3_CTL_R = 0;                     // 4) re-loading down-counting mode
+  PWM1_0_CTL_R = 0;                     // 4) re-loading down-counting mode
   
-  PWM1_3_GENA_R = 0xC8;
-  PWM1_3_LOAD_R = period - 1;           // 5) cycles needed to count down to 0 
-  PWM1_3_CMPA_R = duty - 1;             // 6) count value when output rises
+  PWM1_0_GENA_R = 0xC8;
+  PWM1_0_LOAD_R = period - 1;           // 5) cycles needed to count down to 0 
+  PWM1_0_CMPA_R = duty - 1;             // 6) count value when output rises
   
-  PWM1_3_CTL_R |= 0x00000001;           // 7) start PWM1
-  PWM1_ENABLE_R |= 0x00000040;          // enable PF2/M1PWM6
+  PWM1_0_CTL_R |= 0x00000001;           // 7) start PWM1
+  PWM1_ENABLE_R |= 0x00000001;          // enable PF2/M1PWM6
     
 }
 // change duty cycle of PF2
-void PWM_PF2_Duty(unsigned int duty){
-  PWM1_3_CMPA_R = duty - 1;             // count value when output rises
+void PWM_PD0_Duty(unsigned int duty){
+  PWM1_0_CMPA_R = duty - 1;             // count value when output rises
 }
 
 /*
@@ -152,22 +171,20 @@ void BT_Car_Control(){
             }else if(UART1_data == '1'){
                //set pwm value to 100%
                //   note: 100% for both backward and forward
+                LED = (LED&0xF1)+0x04;
                 UART0_OutString("Got 1\r\n");
                 
             }else if(UART1_data == '2'){
                //set pwm value to 75%
                //   note: 100% for both backward and forward  
+                LED = (LED&0xF1)+0x08;
                 UART0_OutString("Got 2\r\n");
                 
             }else if(UART1_data == '3'){
                //set pwm value to 50%
-               //   note: 100% for both backward and forward   
-                UART0_OutString("Got 3\r\n");
-            }else if(UART1_data == '4'){
-               //set pwm value to 25%
                //   note: 100% for both backward and forward  
-                UART0_OutString("Got 4\r\n");
-                
+                LED = (LED&0xF1)+0x02; 
+                UART0_OutString("Got 3\r\n");
             }else{
                // Received an unused character, so reset the buffer.
                 UART1_data = _null;
@@ -179,9 +196,6 @@ void BT_Car_Control(){
             // Not busy case, do nothing.
         }
 }
-
-
-
 
 // SysTick Init, period will be loaded such that the interrupts happen
 // at 1ms intervals.
@@ -235,11 +249,11 @@ void Send_IR(void){
     while(IR_busy){
         // Transmit IR for the state HIGH
         IR_current_time=0;
-        PWM_PF2_Duty(PWM_50P_DUTY);
+        PWM_PD0_Duty(PWM_50P_DUTY);
         while(IR_current_time < IR_CMD[IR_current_state].HIGH);
         
         // Transmit IR for the state LOW
-        PWM_PF2_Duty(PWM_0P_DUTY);
+        PWM_PD0_Duty(PWM_0P_DUTY);
         IR_current_time=0;
         while(IR_current_time < IR_CMD[IR_current_state].LOW);
         
@@ -259,7 +273,8 @@ int main( void ) {
     PLL_Init();                 // 50MHz
     UART0_Init();               // UART0 (microUSB port)
     UART1_Init();               // UART1 (PB0(RX) to TX pin, PB1(TX) to RX pin)
-    M1_PWM6_PF2_Init(625,2);    // IR_Transmitter PWM init(40KHz, 0%) PWM_clk_rate = Bus_clk/2 = 50MHz/2 = 25MHz. 
+    PortF_LED_Init();
+    M1_PWM0_PD0_Init(625,2);    // IR_Transmitter PWM init(40KHz, 0%) PWM_clk_rate = Bus_clk/2 = 50MHz/2 = 25MHz. 
                                 // want 40KHz, so 25MHz/40KHz = 625, therefore 625 is 100% with 2(0%)duty cycle.
                                 // To use PWM, set up percentage around 625.
 //    SysTick_Init( 83350 );      // 16.67ms(or 60Hz) Interrupts
@@ -267,7 +282,7 @@ int main( void ) {
     SysTick_Init( 5000 );      // 100us interrupt
 
     UART0_OutString(">>> Welcome to Serial Terminal <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
-    UART0_OutString(">>> Type 'AT' and follow with a command <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
+    UART0_OutString(">>> Type W,A,S,D,Q,I,1,2,3 <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
     
     while(1) {
         BT_Car_Control();
