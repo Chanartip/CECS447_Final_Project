@@ -12,14 +12,19 @@ assembling startup.s...
 compiling MCU1_BT_on_Car.c...
 compiling PLL.c...
 compiling UART.c...
+compiling PWM.c...
 linking...
-Program Size: Code=2580 RO-data=116 RW-data=16 ZI-data=1120  
+Program Size: Code=3540 RO-data=116 RW-data=28 ZI-data=1124  
 ".\UART.axf" - 0 Error(s), 0 Warning(s).
-Load "C:\\Users\\Chana\\OneDrive\\2018Spring_CSULB\\CECS447_Microcontroller\\Projects\\FinalProject\\src\\MCU1_BT_on_Car\\UART.axf" 
-Connecting: Mode=JTAG, Speed=1000000Hz
-Erase Done.
-Programming Done.
-Verify OK.
 </pre>
 </body>
 </html>
+(referred from mcu1_bt_on_car.o).
+.\UART.axf: Error: L6218E: Undefined symbol PWM0L_Init (referred from mcu1_bt_on_car.o).
+.\UART.axf: Error: L6218E: Undefined symbol PWM0R_Duty (referred from mcu1_bt_on_car.o).
+.\UART.axf: Error: L6218E: Undefined symbol PWM0R_Init (referred from mcu1_bt_on_car.o).
+.\UART.axf: Error: L6218E: Undefined symbol PWM_PD0_Duty (referred from mcu1_bt_on_car.o).
+Not enough information to list image symbols.
+Finished: 1 information, 0 warning and 6 error messages.
+".\UART.axf" - 6 Error(s), 0 Warning(s).
+Target not created
