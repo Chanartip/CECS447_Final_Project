@@ -40,7 +40,8 @@ Includes, defines, prototypes, global variables.
 #include "../lib/UART.h"
 #include "../lib/PWM.h"
 
-#define LED (*((volatile unsigned long *)0x40025038))        // PF3-1
+#define IR  (*((volatile unsigned long *)0x40007004))       // PD0
+#define LED (*((volatile unsigned long *)0x40025038))       // PF3-1
 #define DIR (*((volatile unsigned long *)0x4000600C))       // PC1-0
 
 // Definition for UART
@@ -83,17 +84,26 @@ struct State {
     unsigned char NEXT;         // Next state
 };
 typedef const struct State Styp;
-
 Styp IR_CMD[7] = {
 //HIGH, LOW,   NEXT
- {2000,1000, ADDR_1},
- {1000, 500, ADDR_0},
- { 500, 500,  CMD_3},
- {1000, 500,  CMD_2},
- { 500, 500,  CMD_1},
- {1000, 500,  CMD_0},
- { 500, 500,  START}
+ {40, 20, ADDR_1},
+ {20, 10, ADDR_0},
+ {10, 10,  CMD_3},
+ {20, 10,  CMD_2},
+ {10, 10,  CMD_1},
+ {20, 10,  CMD_0},
+ {10, 10,  START}
 };
+//Styp IR_CMD[7] = {
+////HIGH, LOW,   NEXT
+// {2000,1000, ADDR_1},
+// {1000, 500, ADDR_0},
+// { 500, 500,  CMD_3},
+// {1000, 500,  CMD_2},
+// { 500, 500,  CMD_1},
+// {1000, 500,  CMD_0},
+// { 500, 500,  START}
+//};
 //____________End IR STATE initialization and definition________________
 
 // necessary variables used in the program
@@ -119,14 +129,25 @@ Inits
  */
 void PortC_DIR_Init(void){ volatile unsigned long delay;
     SYSCTL_RCGCGPIO_R |= 0x04;            // 2) activate port C
+    GPIO_PORTC_LOCK_R = GPIO_LOCK_KEY;
     delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
-    GPIO_PORTF_AFSEL_R &= ~0x03;          // enable alt funct on PC1-0
-    GPIO_PORTF_PCTL_R  &= ~0x00000FFF;     // configure PC1-0 as GPIO
-    GPIO_PORTF_AMSEL_R &= ~0x03;          // disable analog functionality on PC1-0
-    GPIO_PORTF_DIR_R |= 0x03;             // Output PC1-0
-    GPIO_PORTF_DEN_R |= 0x03;             // enable digital I/O on PC1-0
+    GPIO_PORTC_AFSEL_R &= ~0x03;          // enable alt funct on PC1-0
+    GPIO_PORTC_PCTL_R  &= ~0x00000FFF;    // configure PC1-0 as GPIO
+    GPIO_PORTC_AMSEL_R &= ~0x03;          // disable analog functionality on PC1-0
+    GPIO_PORTC_DIR_R |= 0x03;             // Output PC1-0
+    GPIO_PORTC_DEN_R |= 0x03;             // enable digital I/O on PC1-0
 }
 
+ void PortD_IR_Init(void){volatile unsigned long delay;
+  SYSCTL_RCGCGPIO_R  |=  0x08;            // 2) activate port D
+  GPIO_PORTD_LOCK_R = GPIO_LOCK_KEY;
+  delay = SYSCTL_RCGCGPIO_R;              // allow time to finish activating delay here
+  GPIO_PORTD_AFSEL_R &= ~0x01;            // disable alt funct on PD0
+  GPIO_PORTD_PCTL_R  &= ~0x0000000F;      // configure PD0 as GPIO
+  GPIO_PORTD_AMSEL_R &= ~0x01;            // disable analog functionality on PD0
+  GPIO_PORTD_DIR_R   |=  0x01;            // Output PD0
+  GPIO_PORTD_DEN_R   |=  0x01;            // enable digital I/O on PD0
+}
 /*
  * Port F Initialization for LED inidicating PWM power percentage
  *      RED LED - for 50%
@@ -287,23 +308,45 @@ void SysTick_Init(unsigned long period) {
  *
  ***************************************************************************/
 unsigned char delay60Hz=0;
+unsigned char high_time=0;
 void SysTick_Handler(void){
 
-    // delay60Hz is a variable to keep tracking if the system
-    // reaches 60Hz, then it will allow the system to update inputs.
-    if(delay60Hz==0){
-        UART1_data = UART1_NonBlockingInChar();
-        if(UART1_data != _null) UART1_busy=1;
-
-        if(Got_IR & !IR_busy){
-            Got_IR = 0;
-            IR_busy = 1;
-            IR_current_state=START;
+    if(IR_busy){
+        
+        if(high_time){
+            IR = (IR+1)%2;
+            if(IR_current_time >= IR_CMD[IR_current_state].HIGH){
+                high_time = 0;
+            }
         }
-
+        else{ //low time
+            IR = 0;
+            if(IR_current_time >= IR_CMD[IR_current_state].LOW){
+                IR_current_state = IR_CMD[IR_current_state].NEXT;
+                IR_busy = 0;
+            }
+        }
+   
+        IR_current_time++;
+        
     }
-    delay60Hz = (delay60Hz+1)%167;
-    IR_current_time++;
+    else{
+        // delay60Hz is a variable to keep tracking if the system
+        // reaches 60Hz, then it will allow the system to update inputs.
+        if(delay60Hz==0){
+            UART1_data = UART1_NonBlockingInChar();
+            if(UART1_data != _null) UART1_busy=1;
+
+            if(Got_IR & !IR_busy){
+                Got_IR = 0;
+                IR_busy = 1;
+                IR_current_state=START;
+                IR_current_time=0;
+                high_time=1;
+            }
+        }
+        delay60Hz = (delay60Hz+1)%333;//%167;
+    }
 
 }
 
@@ -337,7 +380,6 @@ void Send_IR(void){
 
 }
 
-
 /***************************************************************************
  Main function / loop.
 ***************************************************************************/
@@ -347,14 +389,16 @@ int main( void ) {
     UART0_Init();               // UART0 (microUSB port)
     UART1_Init();               // UART1 (PB0(RX) to TX pin, PB1(TX) to RX pin)
     PortC_DIR_Init();           // Direction Initialization
+    PortD_IR_Init();            // IR LED Initialization
     PortF_LED_Init();           // On-board LEDs Initialization
     PWM0L_Init(25000,12500);    // 50MHz/2= 25MHz; if 1000Hz, 100% period is 25000.
     PWM0R_Init(25000,12500);
-    M1_PWM0_PD0_Init(625,2);    // IR_Transmitter PWM init(40KHz, 0%) PWM_clk_rate = Bus_clk/2 = 50MHz/2 = 25MHz.
+//    M1_PWM0_PD0_Init(625,2);    // IR_Transmitter PWM init(40KHz, 0%) PWM_clk_rate = Bus_clk/2 = 50MHz/2 = 25MHz.
                                 // want 40KHz, so 25MHz/40KHz = 625, therefore 625 is 100% with 2(0%)duty cycle.
                                 // To use PWM, set up percentage around 625.
-    SysTick_Init( 5000 );       // 100us interrupt
-
+//    SysTick_Init( 5000 );       // 100us interrupt
+    SysTick_Init( 625 );       // 20KHz interrupt
+    
     UART0_OutString(">>> Welcome to Serial Terminal <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
     UART0_OutString(">>> Type W,A,S,D,Q,I,1,2,3 <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
     UART0_OutString(">>> W,A,S,D to control direction <<<"); UART0_OutChar(CR); UART0_OutChar(LF);
@@ -364,7 +408,7 @@ int main( void ) {
 
     while(1) {
         BT_Car_Control();
-        Send_IR();
+//        Send_IR();
     } //end while
 } //end main
 

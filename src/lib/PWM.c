@@ -125,7 +125,7 @@ void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty){
   PWM1_0_CMPA_R = duty - 1;             // 6) count value when output rises
   
   PWM1_0_CTL_R |= 0x00000001;           // 7) start PWM1
-  PWM1_ENABLE_R |= 0x00000001;          // enable PF2/M1PWM6
+  PWM1_ENABLE_R |= 0x00000001;          // enable PD0/M1PWM0
     
 }
 // change duty cycle of PD0
