@@ -176,7 +176,7 @@ void BT_Car_Control(){
                 
             }else if(UART1_data == '2'){
                //set pwm value to 75%
-               //   note: 100% for both backward and forward  
+               //   not,  e: 100% for both backward and forward  
                 LED = (LED&0xF1)+0x08;
                 UART0_OutString("Got 2\r\n");
                 
