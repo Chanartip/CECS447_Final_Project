@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\UART.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\UART.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed May 02 12:25:08 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu May 03 12:25:27 2018
 <BR><P>
 <H3>Maximum Stack Usage =         12 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -758,7 +758,7 @@ Global Symbols
 
 <P><STRONG><a name="[cf]"></a>__semihosting_library_function</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, indicate_semi.o(.text), UNUSED)
 
-<P><STRONG><a name="[93]"></a>BT_Car_Control</STRONG> (Thumb, 362 bytes, Stack size 8 bytes, mcu1_bt_on_car.o(i.BT_Car_Control))
+<P><STRONG><a name="[93]"></a>BT_Car_Control</STRONG> (Thumb, 366 bytes, Stack size 8 bytes, mcu1_bt_on_car.o(i.BT_Car_Control))
 <BR><BR>[Stack]<UL><LI>Max Depth = 12<LI>Call Chain = BT_Car_Control &rArr; UART0_OutString
 </UL>
 <BR>[Calls]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutString
@@ -808,10 +808,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[c]"></a>SysTick_Handler</STRONG> (Thumb, 226 bytes, Stack size 8 bytes, mcu1_bt_on_car.o(i.SysTick_Handler))
+<P><STRONG><a name="[c]"></a>SysTick_Handler</STRONG> (Thumb, 248 bytes, Stack size 8 bytes, mcu1_bt_on_car.o(i.SysTick_Handler))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = SysTick_Handler
 </UL>
-<BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_NonBlockingInChar
+<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_NonBlockingInChar
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutChar
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup.o(RESET)
 </UL>
@@ -823,15 +824,16 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[98]"></a>UART0_OutChar</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, uart.o(i.UART0_OutChar))
+<P><STRONG><a name="[97]"></a>UART0_OutChar</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, uart.o(i.UART0_OutChar))
 <BR><BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutString
 <LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 </UL>
 
 <P><STRONG><a name="[94]"></a>UART0_OutString</STRONG> (Thumb, 22 bytes, Stack size 4 bytes, uart.o(i.UART0_OutString))
 <BR><BR>[Stack]<UL><LI>Max Depth = 4<LI>Call Chain = UART0_OutString
 </UL>
-<BR>[Calls]<UL><LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutChar
+<BR>[Calls]<UL><LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutChar
 </UL>
 <BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[93]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;BT_Car_Control
@@ -841,7 +843,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[97]"></a>UART1_NonBlockingInChar</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, uart.o(i.UART1_NonBlockingInChar))
+<P><STRONG><a name="[98]"></a>UART1_NonBlockingInChar</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, uart.o(i.UART1_NonBlockingInChar))
 <BR><BR>[Called By]<UL><LI><a href="#[c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SysTick_Handler
 </UL>
 
@@ -850,7 +852,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART1_Init
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutString
-<LI><a href="#[98]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutChar
+<LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_OutChar
 <LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART0_Init
 <LI><a href="#[a0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM0R_Init
 <LI><a href="#[9f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PWM0L_Init

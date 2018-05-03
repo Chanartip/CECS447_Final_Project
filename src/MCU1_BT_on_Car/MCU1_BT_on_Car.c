@@ -84,26 +84,26 @@ struct State {
     unsigned char NEXT;         // Next state
 };
 typedef const struct State Styp;
-Styp IR_CMD[7] = {
-//HIGH, LOW,   NEXT
- {40, 20, ADDR_1},
- {20, 10, ADDR_0},
- {10, 10,  CMD_3},
- {20, 10,  CMD_2},
- {10, 10,  CMD_1},
- {20, 10,  CMD_0},
- {10, 10,  START}
-};
 //Styp IR_CMD[7] = {
 ////HIGH, LOW,   NEXT
-// {2000,1000, ADDR_1},
-// {1000, 500, ADDR_0},
-// { 500, 500,  CMD_3},
-// {1000, 500,  CMD_2},
-// { 500, 500,  CMD_1},
-// {1000, 500,  CMD_0},
-// { 500, 500,  START}
+// {40, 20, ADDR_1},
+// {20, 10, ADDR_0},
+// {10, 10,  CMD_3},
+// {20, 10,  CMD_2},
+// {10, 10,  CMD_1},
+// {20, 10,  CMD_0},
+// {10, 10,  START}
 //};
+Styp IR_CMD[7] = {
+//HIGH, LOW,   NEXT
+ {2000,1000, ADDR_1},
+ {1000, 500, ADDR_0},
+ { 500, 500,  CMD_3},
+ {1000, 500,  CMD_2},
+ { 500, 500,  CMD_1},
+ {1000, 500,  CMD_0},
+ { 500, 500,  START}
+};
 //____________End IR STATE initialization and definition________________
 
 // necessary variables used in the program
@@ -132,7 +132,7 @@ void PortC_DIR_Init(void){ volatile unsigned long delay;
     GPIO_PORTC_LOCK_R = GPIO_LOCK_KEY;
     delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
     GPIO_PORTC_AFSEL_R &= ~0x03;          // enable alt funct on PC1-0
-    GPIO_PORTC_PCTL_R  &= ~0x00000FFF;    // configure PC1-0 as GPIO
+    GPIO_PORTC_PCTL_R  &= ~0x000000FF;    // configure PC1-0 as GPIO
     GPIO_PORTC_AMSEL_R &= ~0x03;          // disable analog functionality on PC1-0
     GPIO_PORTC_DIR_R |= 0x03;             // Output PC1-0
     GPIO_PORTC_DEN_R |= 0x03;             // enable digital I/O on PC1-0
@@ -225,7 +225,7 @@ void BT_Car_Control(){
             }else if(UART1_data == 'Q'){
                //set direction of the car to Stop
                 UART0_OutString("Stopping\r\n");
-
+                LED = 0;
                 DIR = STOP;
                 pre_speed = cur_speed;
                 cur_speed = P0;
@@ -313,13 +313,17 @@ void SysTick_Handler(void){
 
     if(IR_busy){
         
+        UART0_OutChar('1');
         if(high_time){
+            
+        UART0_OutChar('2');
             IR = (IR+1)%2;
             if(IR_current_time >= IR_CMD[IR_current_state].HIGH){
                 high_time = 0;
             }
         }
         else{ //low time
+        UART0_OutChar('3');
             IR = 0;
             if(IR_current_time >= IR_CMD[IR_current_state].LOW){
                 IR_current_state = IR_CMD[IR_current_state].NEXT;
@@ -327,8 +331,8 @@ void SysTick_Handler(void){
             }
         }
    
+        UART0_OutChar('4');
         IR_current_time++;
-        
     }
     else{
         // delay60Hz is a variable to keep tracking if the system
@@ -345,7 +349,7 @@ void SysTick_Handler(void){
                 high_time=1;
             }
         }
-        delay60Hz = (delay60Hz+1)%333;//%167;
+        delay60Hz = (delay60Hz+1)%167;//333;//%167;
     }
 
 }
@@ -360,25 +364,25 @@ precedure:
  -> update current state -> if finish, exit the function and set IR_busy to zero.
 
 */
-void Send_IR(void){
+//void Send_IR(void){
 
-    while(IR_busy){
-        // Transmit IR for the state HIGH
-        IR_current_time=0;
-        PWM_PD0_Duty(PWM_50P_DUTY);
-        while(IR_current_time < IR_CMD[IR_current_state].HIGH);
+//    while(IR_busy){
+//        // Transmit IR for the state HIGH
+//        IR_current_time=0;
+//        PWM_PD0_Duty(PWM_50P_DUTY);
+//        while(IR_current_time < IR_CMD[IR_current_state].HIGH);
 
-        // Transmit IR for the state LOW
-        PWM_PD0_Duty(PWM_0P_DUTY);
-        IR_current_time=0;
-        while(IR_current_time < IR_CMD[IR_current_state].LOW);
+//        // Transmit IR for the state LOW
+//        PWM_PD0_Duty(PWM_0P_DUTY);
+//        IR_current_time=0;
+//        while(IR_current_time < IR_CMD[IR_current_state].LOW);
 
-        // Update State
-        IR_current_state = IR_CMD[IR_current_state].NEXT;
-        if(IR_current_state == START) IR_busy = 0;
-    }
+//        // Update State
+//        IR_current_state = IR_CMD[IR_current_state].NEXT;
+//        if(IR_current_state == START) IR_busy = 0;
+//    }
 
-}
+//}
 
 /***************************************************************************
  Main function / loop.

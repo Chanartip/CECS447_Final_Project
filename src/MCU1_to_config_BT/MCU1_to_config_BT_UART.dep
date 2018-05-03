@@ -6,7 +6,7 @@ F (..\lib\UART.c)(0x5AE79F06)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwor
 I (..\lib\UART.h)(0x5AE252DD)
 I (..\lib\tm4c123gh6pm.h)(0x5AE252DD)
 F (.\MCU1_to_config_BT.c)(0x5AE79F06)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_LM4F120H5QR-o .\mcu1_to_config_bt.o --omf_browse .\mcu1_to_config_bt.crf --depend .\mcu1_to_config_bt.d)
-I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C8A654)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
 I (../lib/tm4c123gh6pm.h)(0x5AE252DD)
 I (../lib/PLL.h)(0x5AE252DD)
 I (../lib/UART.h)(0x5AE252DD)

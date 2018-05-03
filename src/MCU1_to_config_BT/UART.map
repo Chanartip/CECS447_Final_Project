@@ -625,13 +625,13 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       536        312          0          6          0       1964   mcu1_to_config_bt.o
-       124          6          0          0          0       1895   pll.o
-       692        632          0          0       1024       1012   startup.o
-       436         72          0          0          0       3408   uart.o
+       536        312          0          6          0       1968   mcu1_to_config_bt.o
+       124          6          0          0          0       1899   pll.o
+       692        632          0          0       1024       1020   startup.o
+       436         72          0          0          0       3420   uart.o
 
     ----------------------------------------------------------------------
-      1792       1022         32          8       1024       8279   Object Totals
+      1792       1022         32          8       1024       8307   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          4          0          0          2          0          0   (incl. Padding)
 
@@ -680,8 +680,8 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2064       1038         32          8       1120       8127   Grand Totals
-      2064       1038         32          8       1120       8127   ELF Image Totals
+      2064       1038         32          8       1120       8155   Grand Totals
+      2064       1038         32          8       1120       8155   ELF Image Totals
       2064       1038         32          8          0          0   ROM Totals
 
 ==============================================================================

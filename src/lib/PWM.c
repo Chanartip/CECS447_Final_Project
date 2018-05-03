@@ -104,31 +104,31 @@ void PWM0R_Duty(uint16_t duty){
 /*
     PWM (Module1, PWM0) for Generating IR_signal
 */
-void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty){
-    
-  volatile unsigned long delay;
-  SYSCTL_RCGCPWM_R |= 0x02;             // 1) activate PWM1
-  SYSCTL_RCGCGPIO_R |= 0x08;            // 2) activate port D
-  delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
-  GPIO_PORTD_AFSEL_R |= 0x01;           // enable alt funct on PD0
-  GPIO_PORTD_PCTL_R &= ~0x0000000F;     // configure PD0 as M1PWM0
-  GPIO_PORTD_PCTL_R |=  0x00000005;
-  GPIO_PORTD_AMSEL_R &= ~0x01;          // disable analog functionality on PD0
-  GPIO_PORTD_DEN_R |= 0x01;             // enable digital I/O on PD0
-  SYSCTL_RCC_R |= SYSCTL_RCC_USEPWMDIV; // 3) use PWM divider
-  SYSCTL_RCC_R &= ~SYSCTL_RCC_PWMDIV_M; //    clear PWM divider field
-  SYSCTL_RCC_R += SYSCTL_RCC_PWMDIV_2;  //    configure for /2 divider
-  PWM1_0_CTL_R = 0;                     // 4) re-loading down-counting mode
-  
-  PWM1_0_GENA_R = 0xC8;
-  PWM1_0_LOAD_R = period - 1;           // 5) cycles needed to count down to 0 
-  PWM1_0_CMPA_R = duty - 1;             // 6) count value when output rises
-  
-  PWM1_0_CTL_R |= 0x00000001;           // 7) start PWM1
-  PWM1_ENABLE_R |= 0x00000001;          // enable PD0/M1PWM0
-    
-}
-// change duty cycle of PD0
-void PWM_PD0_Duty(unsigned int duty){
-  PWM1_0_CMPA_R = duty - 1;             // count value when output rises
-}
+//void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty){
+//    
+//  volatile unsigned long delay;
+//  SYSCTL_RCGCPWM_R |= 0x02;             // 1) activate PWM1
+//  SYSCTL_RCGCGPIO_R |= 0x08;            // 2) activate port D
+//  delay = SYSCTL_RCGCGPIO_R;            // allow time to finish activating delay here
+//  GPIO_PORTD_AFSEL_R |= 0x01;           // enable alt funct on PD0
+//  GPIO_PORTD_PCTL_R &= ~0x0000000F;     // configure PD0 as M1PWM0
+//  GPIO_PORTD_PCTL_R |=  0x00000005;
+//  GPIO_PORTD_AMSEL_R &= ~0x01;          // disable analog functionality on PD0
+//  GPIO_PORTD_DEN_R |= 0x01;             // enable digital I/O on PD0
+//  SYSCTL_RCC_R |= SYSCTL_RCC_USEPWMDIV; // 3) use PWM divider
+//  SYSCTL_RCC_R &= ~SYSCTL_RCC_PWMDIV_M; //    clear PWM divider field
+//  SYSCTL_RCC_R += SYSCTL_RCC_PWMDIV_2;  //    configure for /2 divider
+//  PWM1_0_CTL_R = 0;                     // 4) re-loading down-counting mode
+//  
+//  PWM1_0_GENA_R = 0xC8;
+//  PWM1_0_LOAD_R = period - 1;           // 5) cycles needed to count down to 0 
+//  PWM1_0_CMPA_R = duty - 1;             // 6) count value when output rises
+//  
+//  PWM1_0_CTL_R |= 0x00000001;           // 7) start PWM1
+//  PWM1_ENABLE_R |= 0x00000001;          // enable PD0/M1PWM0
+//    
+//}
+//// change duty cycle of PD0
+//void PWM_PD0_Duty(unsigned int duty){
+//  PWM1_0_CMPA_R = duty - 1;             // count value when output rises
+//}

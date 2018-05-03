@@ -50,6 +50,6 @@ void PWM0R_Init(uint16_t period, uint16_t duty);
 void PWM0R_Duty(uint16_t duty);
 
 // M1_PWM0_PD0 initialization and Duty a
-void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty);
-void PWM_PD0_Duty(unsigned int duty);
+//void M1_PWM0_PD0_Init(unsigned int period, unsigned int duty);
+//void PWM_PD0_Duty(unsigned int duty);
 
