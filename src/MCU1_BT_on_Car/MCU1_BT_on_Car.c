@@ -103,6 +103,7 @@ unsigned char IR_busy=0;            // IR busy flag
 unsigned char Got_IR=0;             // IR transmission request
 unsigned int  cur_speed=P50;        // current speed start at 50%
 unsigned int  pre_speed=P50;        // previous speed
+unsigned int  cur_pwm=P50;          // current PWM duty
 unsigned char pre_LED=0x02;         // previous LED, originally start at 50%(RED)
 
 /***************************************************************************
@@ -185,48 +186,54 @@ void BT_Car_Control(){
     if(UART1_busy){
             if(UART1_data == 'W'){
                //set direction of the car to move forward
-                UART0_OutString("Moving Forward\r\n");
+                UART1_OutString("Moving Forward\r\n");
                 LED = pre_LED;
                 DIR = FORWARD;
-                cur_speed = pre_speed;
+                cur_speed = cur_pwm;
+                M1PWM2_L_Duty(cur_speed);
+                M1PWM3_R_Duty(cur_speed);
 
             }else if(UART1_data == 'A'){
                //set direction of the car to turn left
-                UART0_OutString("Turning Left\r\n");
+                UART1_OutString("Turning Left\r\n");
                 LED = pre_LED;
                 DIR = LEFT;
-                cur_speed = pre_speed;
+                cur_speed = cur_pwm;
+                M1PWM2_L_Duty(cur_speed*65/100);
+                M1PWM3_R_Duty(cur_speed);
 
             }else if(UART1_data == 'S'){
                //set direction of the car to move backward
-                UART0_OutString("Moving Backward\r\n");
+                UART1_OutString("Moving Backward\r\n");
                 LED = pre_LED;
                 DIR = BACKWARD;
-                cur_speed = pre_speed;
+                cur_speed = cur_pwm;
+                M1PWM2_L_Duty(cur_speed);
+                M1PWM3_R_Duty(cur_speed);
 
             }else if(UART1_data == 'D'){
                //set direction of the car to turn right
-                UART0_OutString("Turning Right\r\n");
+                UART1_OutString("Turning Right\r\n");
                 LED = pre_LED;
                 DIR = RIGHT;
-                cur_speed = pre_speed;
+                cur_speed = cur_pwm;
+                M1PWM2_L_Duty(cur_speed);
+                M1PWM3_R_Duty(cur_speed*65/100);
 
             }else if(UART1_data == 'Q'){
                //set direction of the car to Stop
                // if previous state is STOP, keep the state
                // before previous state.
-                UART0_OutString("Stopping\r\n");
+                UART1_OutString("Stopping\r\n");
                 if(LED == 0x00) pre_LED = pre_LED; 
                 else pre_LED = LED;
                 LED = 0;
                 DIR = STOP;
-                if(cur_speed == 0x00) pre_speed = pre_speed;
-                else pre_speed = cur_speed;
                 cur_speed = P0;
 
             }else if(UART1_data == 'I'){
                //trig a flag to send IR signal
-                UART0_OutString("Sending IR signal\r\n");
+                UART1_OutString("Sending IR signal\r\n");
                 Got_IR = 1;
 
             }else if(UART1_data == '1'){
@@ -234,9 +241,9 @@ void BT_Car_Control(){
                //   note: 100% for both backward and forward
                 LED = (LED&0xF1)+0x04;
                 pre_LED = LED;
-                UART0_OutString("PWM 100%\r\n");
-                cur_speed = P100;
-                pre_speed = cur_speed;
+                UART1_OutString("PWM 100%\r\n");
+                cur_pwm = P100;
+                cur_speed = cur_pwm;
 
             }else if(UART1_data == '2'){
                //set pwm value to 75%
@@ -244,26 +251,22 @@ void BT_Car_Control(){
                 LED = (LED&0xF1)+0x08;
                 pre_LED = LED;
                 UART0_OutString("PWM 75%\r\n");
-                cur_speed = P75;
-                pre_speed = cur_speed;
+                cur_pwm = P75;
+                cur_speed = cur_pwm;
 
             }else if(UART1_data == '3'){
                //set pwm value to 50%
                //   note: 100% for both backward and forward
                 LED = (LED&0xF1)+0x02;
                 pre_LED = LED;
-                UART0_OutString("PWM 50%\r\n");
-                cur_speed = P50;
-                pre_speed = cur_speed;
+                UART1_OutString("PWM 50%\r\n");
+                cur_pwm = P50;
+                cur_speed = cur_pwm;
 
             }else{
                // Received an unused character, so reset the buffer.
                 UART1_data = _null;
             }
-
-            // Assign Left and Right wheel PWM duty
-            M1PWM2_L_Duty(cur_speed);
-            M1PWM3_R_Duty(cur_speed);
 
             UART1_busy = 0; // After finished the task, releases the BUSY flag.
         }

@@ -5,6 +5,13 @@ Name:   Chanartip Soonthornwan
 Revision 1.0: Date 4/26/2018
 
  */
+ 
+ /*
+    Pins uses
+    PD0 GPIO    - IR signal (in)
+ */
+ 
+ 
 #include <stdint.h>
 #include "../lib/PLL.h"
 #include "../lib/tm4c123gh6pm.h"
@@ -50,11 +57,38 @@ void SysTick_Init(unsigned long period) {
 Interrupts, ISRs
 
 ***************************************************************************/
+unsigned char cur_IR=0, pre_IR=0;
+unsigned char Got_IR=0;
+unsigned int  IR_current_time=0;
 void SysTick_Handler(void){
+
+    if(Got_IR){
+        if(IR_
+    }
+    else{
+        // Positive edge detection
+        // if current signal is high
+        // and previous signal is low,
+        // then it is the rising edge of IR signal
+        cur_IR = IR_IN;
+        if(cur_IR & (pre_IR^0x01)) {
+            Got_IR = 1;
+            IR_current_time = 0;
+        }
+        else  pre_IR = cur_IR;
+        
+    }
+    
+    IR_current_time++;
+    
+    
     IR_check = IR_IN;       //Receiving IR input every 40KHz
     SAMPLE++;
     if(IR_check != IR_current) ERROR++;
     ERROR_PERCENT = ERROR*100/SAMPLE;
+    
+    
+    
 }
 
 void update_IR_state(){

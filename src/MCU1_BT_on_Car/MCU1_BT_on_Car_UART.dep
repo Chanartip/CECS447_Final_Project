@@ -1,0 +1,17 @@
+Dependencies for Project 'MCU1_BT_on_Car', Target 'UART': (DO NOT MODIFY !)
+F (.\startup.s)(0x5AE252DD)(--cpu Cortex-M4 --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary--list .\startup.lst --xref -o .\startup.o --depend .\startup.d)
+F (.\MCU1_BT_on_Car.c)(0x5AEE2E4D)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_LM4F120H5QR-o .\mcu1_bt_on_car.o --omf_browse .\mcu1_bt_on_car.crf --depend .\mcu1_bt_on_car.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (../lib/tm4c123gh6pm.h)(0x5AE252DD)
+I (../lib/PLL.h)(0x5AE252DD)
+I (../lib/UART.h)(0x5AE252DD)
+I (../lib/PWM.h)(0x5AECDD95)
+F (..\lib\PLL.c)(0x5AE252DD)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_LM4F120H5QR-o .\pll.o --omf_browse .\pll.crf --depend .\pll.d)
+I (..\lib\PLL.h)(0x5AE252DD)
+F (..\lib\UART.c)(0x5AEBFCA0)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_LM4F120H5QR-o .\uart.o --omf_browse .\uart.crf --depend .\uart.d)
+I (..\lib\UART.h)(0x5AE252DD)
+I (..\lib\tm4c123gh6pm.h)(0x5AE252DD)
+F (..\lib\PWM.c)(0x5AED659A)(-c --cpu Cortex-M4 -D__EVAL -g -O0 --apcs=interwork --split_sections --signed_chars -I.. -I..\..\..-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\Luminary-Drvmdk -DPART_LM4F120H5QR-o .\pwm.o --omf_browse .\pwm.crf --depend .\pwm.d)
+I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C89844)
+I (..\lib\PWM.h)(0x5AECDD95)
+I (..\lib\tm4c123gh6pm.h)(0x5AE252DD)
