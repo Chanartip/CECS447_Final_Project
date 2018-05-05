@@ -8,12 +8,9 @@ Revision 1.0: Date 4/26/2018
 #include <stdint.h>
 #include "../lib/PLL.h"
 #include "../lib/tm4c123gh6pm.h"
+#include "../lib/UART.h"
 
 #define IR_IN   (*((volatile unsigned long *)0x40007004))   //PD0
-#define IDLE 0
-#define START_HIGH 1
-#define START_LOW 2
-#define 
 
 unsigned char IR_check=0;
 unsigned char IR_current=0;
@@ -68,6 +65,7 @@ void update_IR_state(){
 int main(void){
     
     PLL_Init();                // bus clock at 50 MHz
+    UART0_Init();
     PORTD_Init();              // IR signal digital input
     SysTick_Init(625);        // Systick interrupt every 12.5us (80KHz for IR_receving purpose)
     

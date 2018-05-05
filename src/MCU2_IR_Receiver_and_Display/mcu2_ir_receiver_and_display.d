@@ -2,3 +2,4 @@
 .\mcu2_ir_receiver_and_display.o: C:\Keil\ARM\ARMCC\bin\..\include\stdint.h
 .\mcu2_ir_receiver_and_display.o: ../lib/PLL.h
 .\mcu2_ir_receiver_and_display.o: ../lib/tm4c123gh6pm.h
+.\mcu2_ir_receiver_and_display.o: ../lib/UART.h
