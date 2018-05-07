@@ -1,0 +1,40 @@
+
+//unsigned char cur_IR=0, pre_IR=0;
+//unsigned char Got_IR=0;
+//unsigned int  IR_current_time=0;
+//unsigned int  ERROR_PER=0;
+//unsigned long low=0, high=0;
+//void SysTick_Handler(void){
+
+//    if(Got_IR){
+//        if(pre_IR != IR_IN){
+//            UART0_OutUDec(IR_current_time);
+//            if(IR_IN == 0x01) UART0_OutChar('/');
+//            else UART0_OutString("\\");
+//            pre_IR = IR_IN;
+//            IR_current_time = 0;
+//        }
+//        
+//        if(IR_current_time > 420) Got_IR=0;
+//    }
+//    else{
+//        // Positive edge detection
+//        // if current signal is high
+//        // and previous signal is low,
+//        // then it is the rising edge of IR signal
+//        cur_IR = IR_IN;
+//        if(pre_IR & (cur_IR^0x01) && IR_current_time >= 420) {
+//            Got_IR = 1;
+//            IR_current_time = 0;
+//            SAMPLE = 0;
+//            pre_IR = cur_IR;
+//            UART0_OutString("\n\r\\");
+//        }
+//        else  pre_IR = cur_IR;
+//        
+//    }
+//    
+//    IR_current_time++;
+//    
+//  
+//}

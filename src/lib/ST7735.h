@@ -55,7 +55,7 @@
 // VCC (pin 2) connected to +3.3 V
 // Gnd (pin 1) connected to ground
 
-// **********wide.hk ST7735R*******************
+// **********wide.hk ST7735R with ADXL345 accelerometer *******************
 // Silkscreen Label (SDC side up; LCD side down) - Connection
 // VCC  - +3.3 V
 // GND  - Ground
@@ -71,7 +71,7 @@
 // SDO  – (NC) I2C alternate address for ADXL345 accelerometer
 // Backlight + - Light, backlight connected to +3.3 V
 
-// **********ADXL335 3-axis ST7735R*******************
+// **********wide.hk ST7735R with ADXL335 accelerometer *******************
 // Silkscreen Label (SDC side up; LCD side down) - Connection
 // VCC  - +3.3 V
 // GND  - Ground
@@ -138,6 +138,11 @@ void ST7735_InitR(enum initRFlags option);
 //        color 16-bit color, which can be produced by ST7735_Color565()
 // Output: none
 void ST7735_DrawPixel(int16_t x, int16_t y, uint16_t color);
+
+
+void ST7735_DrawCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color);
+void ST7735_FillCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color);
+void ST7735_DrawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
 
 //------------ST7735_DrawFastVLine------------
 // Draw a vertical line at the given coordinates with the given height and color.

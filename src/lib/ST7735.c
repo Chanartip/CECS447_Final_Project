@@ -28,7 +28,7 @@
 
 /* This example accompanies the book
    "Embedded Systems: Real Time Interfacing to ARM Cortex M Microcontrollers",
-   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2014
+   ISBN: 978-1463590154, Jonathan Valvano, copyright (c) 2015
 
  Copyright 2015 by Jonathan W. Valvano, valvano@mail.utexas.edu
     You may use, edit, run or distribute this file
@@ -56,7 +56,7 @@
 // VCC (pin 2) connected to +3.3 V
 // Gnd (pin 1) connected to ground
 
-// **********wide.hk ST7735R*******************
+// **********wide.hk ST7735R with ADXL345 accelerometer *******************
 // Silkscreen Label (SDC side up; LCD side down) - Connection
 // VCC  - +3.3 V
 // GND  - Ground
@@ -72,7 +72,7 @@
 // SDO  – (NC) I2C alternate address for ADXL345 accelerometer
 // Backlight + - Light, backlight connected to +3.3 V
 
-// **********ADXL335 3-axis ST7735R*******************
+// **********wide.hk ST7735R with ADXL335 accelerometer *******************
 // Silkscreen Label (SDC side up; LCD side down) - Connection
 // VCC  - +3.3 V
 // GND  - Ground
@@ -90,6 +90,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "ST7735.h"
 #include "tm4c123gh6pm.h"
 
@@ -99,6 +100,7 @@ uint32_t StX=0; // position along the horizonal axis 0 to 20
 uint32_t StY=0; // position along the vertical axis 0 to 15
 uint16_t StTextColor = ST7735_YELLOW;
 
+#define swap(a, b) { int16_t t = a; a = b; b = t; }
 #define ST7735_NOP     0x00
 #define ST7735_SWRESET 0x01
 #define ST7735_RDDID   0x04
@@ -825,7 +827,7 @@ void static pushColor(uint16_t color) {
   writedata((uint8_t)color);
 }
 
-
+ 
 //------------ST7735_DrawPixel------------
 // Color the pixel at the given coordinates with the given color.
 // Requires 13 bytes of transmission
@@ -847,7 +849,132 @@ void ST7735_DrawPixel(int16_t x, int16_t y, uint16_t color) {
   pushColor(color);
 }
 
+//------------ST7735_DrawCircle------------
+// Draw a circle with the given radius and color.
+// Input: x     horizontal position of the start of the line, columns from the left edge
+//        y     vertical position of the start of the line, rows from the top edge
+//        r     radius of the circle
+//        color 16-bit color, which can be produced by ST7735_Color565()
+// Output: none
+void ST7735_DrawCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color)
+{
+  int16_t f = 1 - r;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * r;
+  int16_t x = 0;
+  int16_t y = r;
 
+  ST7735_DrawPixel(x0, y0+r, color);
+  ST7735_DrawPixel(x0, y0-r, color);
+  ST7735_DrawPixel(x0+r, y0, color);
+  ST7735_DrawPixel(x0-r, y0, color);
+
+  while (x<y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f += ddF_x;
+  
+    ST7735_DrawPixel(x0 + x, y0 + y, color);
+    ST7735_DrawPixel(x0 - x, y0 + y, color);
+    ST7735_DrawPixel(x0 + x, y0 - y, color);
+    ST7735_DrawPixel(x0 - x, y0 - y, color);
+    
+    ST7735_DrawPixel(x0 + y, y0 + x, color);
+    ST7735_DrawPixel(x0 - y, y0 + x, color);
+    ST7735_DrawPixel(x0 + y, y0 - x, color);
+    ST7735_DrawPixel(x0 - y, y0 - x, color);
+    
+  }
+}
+ 
+//------------ST7735_FillCircle------------
+// Fill a circle with the given radius and color.
+// Input: x     horizontal position of the start of the line, columns from the left edge
+//        y     vertical position of the start of the line, rows from the top edge
+//        r     radius of the circle
+//        color 16-bit color, which can be produced by ST7735_Color565()
+// Output: none
+ void ST7735_FillCircle(uint8_t x0, uint8_t y0, uint8_t r, uint16_t color) {
+	int16_t f = 1 - r;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * r;
+  int16_t x = 0;
+  int16_t y = r;
+
+  ST7735_DrawFastVLine(x0, y0-r, 2*r+1, color);
+
+  while (x<y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f += ddF_x;
+  
+    ST7735_DrawFastVLine(x0+x, y0-y, 2*y+1, color);
+    ST7735_DrawFastVLine(x0-x, y0-y, 2*y+1, color);
+    ST7735_DrawFastVLine(x0+y, y0-x, 2*x+1, color);
+    ST7735_DrawFastVLine(x0-y, y0-x, 2*x+1, color);
+  }
+ }
+ 
+//------------ST7735_DrawLine------------
+// Draw a  line at the given coordinates with the given height and color.
+// Requires (11 + 2*h) bytes of transmission (assuming image fully on screen)
+// Input: x     horizontal position of the start of the line, columns from the left edge
+//        y     vertical position of the start of the line, rows from the top edge
+//        h     height of the line
+//        color 16-bit color, which can be produced by ST7735_Color565()
+// Output: none
+ 
+ void ST7735_DrawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color) {
+ 
+	 int16_t steep = abs(y1 - y0) > abs(x1 - x0);
+	 int16_t dx, dy;
+	 int16_t err, ystep;
+		if (steep) {
+			swap(x0, y0);
+			swap(x1, y1);
+		}
+
+		if (x0 > x1) {
+			swap(x0, x1);
+			swap(y0, y1);
+		}
+
+		
+		dx = x1 - x0;
+		dy = abs(y1 - y0);
+
+		err = dx / 2;
+		
+
+		if (y0 < y1) {
+			ystep = 1;
+			} else {
+			ystep = -1;
+		}
+
+		for (; x0<=x1; x0++) {
+			if (steep) {
+				ST7735_DrawPixel(y0, x0, color);
+				} else {
+				ST7735_DrawPixel(x0, y0, color);
+			}
+			err -= dy;
+			if (err < 0) {
+				y0 += ystep;
+				err += dx;
+			}
+		}
+    }
 //------------ST7735_DrawFastVLine------------
 // Draw a vertical line at the given coordinates with the given height and color.
 // A vertical line is parallel to the longer side of the rectangular display
