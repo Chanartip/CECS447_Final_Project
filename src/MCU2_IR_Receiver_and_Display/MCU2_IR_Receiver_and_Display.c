@@ -1,16 +1,24 @@
 /*
-Name:   Chanartip Soonthornwan
-        Samuel Poff
+    Name:       Chanartip Soonthornwan
+                Samuel Poff
 
+    Email:      Chanartip.Soonthornwan@gmail.com
+                spoff42@gmail.com
+				
 Revision 1.0: Date 4/26/2018
-
+Revision 1.1: Date 5/6/2018
+	- Added ST7735 library
+	- Added Aim's picture
+	- Changed IR input pin from PC4 to PD0
+	- Added IR input's error checking
+	- Added displays for waiting signal mode, and got signal mode
  */
 
  /*
     Pins uses
     PA0 UART0(RX) - Terminal display
-    PA1 UART1(TX) - Terminal display
-    PD0 GPIO    - IR signal (in)
+    PA1 UART0(TX) - Terminal display
+    PD0 GPIO      - IR signal (in)
 
  */
 
@@ -801,9 +809,12 @@ const unsigned short Aim[] = {
 
 
 /***************************************************************************
-Inits
+	Inits
 ***************************************************************************/
 
+/*
+	Initialize PortD for PD0 (IR_receiver) as GPIO input
+*/
 void PORTD_Init(){
   unsigned long volatile delay;
   SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOD; // (a) activate clock for port D
@@ -832,14 +843,14 @@ void SysTick_Init(unsigned long period) {
 Interrupts, ISRs
 
 ***************************************************************************/
-unsigned long SAMPLE=0;
-unsigned long ERROR=0;
-unsigned char cur_IR=0, pre_IR=0;
-unsigned char Got_IR=0;
-unsigned int  IR_current_time=0;
-unsigned int  ERROR_PER=0;
-unsigned char SIGNAL_VALID=0;
-unsigned long delay=0;
+unsigned long SAMPLE=0;				  // a counter of number of samples
+unsigned long ERROR=0;				  // a counter of error occurs in signal sampling
+unsigned int  ERROR_PER=0;		      // a register holding error percentage
+unsigned char cur_IR=0, pre_IR=0;	  // registers for negative edge detecting
+unsigned char Got_IR=0;				  // a flag stating that there is an incoming IR signal
+unsigned int  IR_current_time=0;	  // IR time counter
+unsigned char SIGNAL_VALID=0;		  // a flag stating if the incoming input is valid
+unsigned long delay=0;				  // delay for LCD display
 void SysTick_Handler(void){
 
     if(Got_IR){
@@ -934,9 +945,13 @@ int main(void){
     ST7735_DrawBitmap(0, 156, Aim, 96, 128);
 
     while(1){
-
+		
+		// Reached 140 Hz, Updating the LCD
+		//	when signal is valid
+		//	when signal is invalid
+		//  and when haven't got a signal.
         if(delay==0){
-            if(SIGNAL_VALID == HIGH){ // got the signal
+            if(SIGNAL_VALID == HIGH){ // got the signal and the signal is valid
 
                 if(draw==0){
                     Output_Clear();
@@ -961,12 +976,13 @@ int main(void){
 
 
             }
-            else if(SIGNAL_VALID == LOW && draw == 1){
+            else if(SIGNAL_VALID == LOW && draw == 1){	// got the signal but it's not valid
                 draw = 0;
                 Output_Clear();
                 ST7735_DrawBitmap(0, 156, Aim, 96, 128);
             }
             else{ // Waiting for signal
+			
                 ST7735_FillRect(0,0,1+x,30,ST7735_Color565(0,0,0));
                 ST7735_DrawCharS( 2+x,  2, 'W', ST7735_Color565(255, 0, (0+x)%255), 0, 1);
                 ST7735_DrawCharS(10+x,  2, 'a', ST7735_Color565(255, (128+x)%255, 0), 0, 1);
